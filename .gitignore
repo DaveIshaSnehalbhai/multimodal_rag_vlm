@@ -1,0 +1,25 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+venv/
+*.egg-info/
+
+# Large data files — don't commit, download separately
+qdrant_db/
+qdrant_data/
+qwen2vl/
+*.zip
+*.gz
+wit_data/
+flickr_indic.csv
+evaluation_results.csv
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
