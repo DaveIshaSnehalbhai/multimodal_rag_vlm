@@ -17,7 +17,7 @@ A complete multimodal RAG pipeline that:
 5. Generates a factually grounded final caption using the retrieved context
 6. Translates to Hindi, Bengali, Marathi, Gujarati via Google Translate
 
-Fine-tuned Qwen2-VL-2B with 4-bit QLoRA on ~11,000 Flickr30k images × 5 languages.
+Fine-tuned Qwen2-VL-2B with 4-bit QLoRA on ~500 Flickr30k images × 5 languages.
 
 ---
 
