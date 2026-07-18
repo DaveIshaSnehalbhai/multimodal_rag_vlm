@@ -78,40 +78,6 @@ Similar Images         Relevant Knowledge
 
 ---
 
-## Project Structure
-
-```
-IndicRAG-VLM/
-├── src/
-│   ├── retrieval/
-│   │   ├── embeddings.py      # CLIPEncoder (768), BGEEncoder (1024)
-│   │   ├── vector_store.py    # VectorStore — Qdrant text + image ops
-│   │   └── corpus_builder.py  # WIT, Sangraha, Flickr loaders + build_corpus
-│   ├── generation/
-│   │   ├── captioner.py       # Captioner — Qwen2-VL base + LoRA adapter
-│   │   ├── translator.py      # Translator — Google Translate to 4 Indic langs
-│   │   └── pipeline.py        # IndicRAGPipeline — full end-to-end orchestration
-│   ├── finetune/
-│   │   ├── dataset.py         # IndicCaptioningDataset + build_context_cache
-│   │   ├── collator.py        # QwenCollator — chat template + label masking
-│   │   └── trainer.py         # QLoRATrainer — 4-bit QLoRA training
-│   └── evaluation/
-│       └── metrics.py         # Evaluator — BLEU-4/METEOR/BERTScore/CLIPScore/Hallucination
-├── ui/
-│   └── app.py                 # Streamlit — loads fine-tuned weights + Qdrant DB
-├── notebooks/
-│   └── IndicRAG_VLM_Complete.ipynb
-├── qdrant_db/                 # Pre-built Qdrant vector store (add after download)
-│   └── content/qdrant_data/
-├── qwen2vl/                   # Fine-tuned LoRA adapter (add after download)
-│   └── content/qwen2vl_indic_rag_lora/final_adapter/
-├── requirements.txt
-├── setup.md                   # Step-by-step environment setup
-└── README.md
-```
-
----
-
 ## Datasets Used
 
 | Dataset | Role |
@@ -135,7 +101,6 @@ IndicRAG-VLM/
 
 ## Quick Start
 
-See [setup.md](setup.md) for full environment setup.
 
 ```bash
 # Install
@@ -146,80 +111,5 @@ python -m spacy download en_core_web_sm
 streamlit run ui/app.py
 ```
 
-```python
-# Inference from Python
-from src.retrieval import VectorStore
-from src.generation import Captioner, IndicRAGPipeline
-
-store  = VectorStore(path="qdrant_db/content/qdrant_data")
-cap    = Captioner(adapter_path="qwen2vl/content/qwen2vl_indic_rag_lora/final_adapter")
-pipe   = IndicRAGPipeline(store, cap)
-
-result = pipe.run("image.jpg", use_rag=True)
-for lang, caption in result["captions"].items():
-    print(f"{lang}: {caption}")
-```
-
 ---
 
-## Is this Multimodal RAG? ✅
-
-| Component | Modality |
-|---|---|
-| CLIP visual retrieval | Image → Image |
-| BGE-M3 text retrieval | Text → Text |
-| Qwen2-VL generation | Image + Text → Text |
-
-Two retrieval modalities (image + text) feeding a vision-language model = **multimodal RAG**.
-
----
-
-## Should You Upload to HuggingFace?
-
-**Yes — upload the LoRA adapter and Qdrant DB as separate repos.**
-
-```bash
-# Upload fine-tuned LoRA adapter (~50 MB)
-huggingface-cli upload YOUR_USERNAME/IndicRAG-VLM-LoRA \
-    qwen2vl/content/qwen2vl_indic_rag_lora/final_adapter \
-    --repo-type model
-
-# Upload Qdrant DB as dataset
-huggingface-cli upload YOUR_USERNAME/IndicRAG-VLM-VectorDB \
-    qdrant_db.zip --repo-type dataset
-
-# Deploy Streamlit as a Space
-# Add this to README.md frontmatter:
-# ---
-# sdk: streamlit
-# app_file: ui/app.py
-# ---
-huggingface-cli upload YOUR_USERNAME/IndicRAG-VLM . \
-    --repo-type space
-```
-
-HuggingFace is strongly recommended for job applications — recruiters and interviewers can run your demo without any setup. A live Space with your results table in the README is more impressive than a GitHub repo alone.
-
----
-
-## Resume Points
-
-```
-IndicRAG-VLM — Multimodal RAG Captioning  |  PyTorch · Transformers · Qdrant · Streamlit
-
-• Built multimodal RAG pipeline (CLIP ViT-L/14 visual + BGE-M3 semantic retrieval)
-  over 50K+ chunk corpus (WIT + Sangraha + Flickr30k) in Qdrant; RAG reduced
-  hallucination 35.4% (0.32→0.21) and improved BLEU-4 22.8% (0.036→0.044)
-
-• Fine-tuned Qwen2-VL-2B with 4-bit QLoRA (~1% trainable params) on ~11K
-  Flickr30k images × 5 Indic languages; BERTScore F1=0.90, CLIPScore=0.26
-
-• Deployed 5-language Streamlit app (en/hi/bn/mr/gu) with hot-loadable LoRA
-  adapter, real-time retrieval visualization, and per-step latency tracking
-```
-
----
-
-## Author
-
-MTech AI — IIT Gandhinagar
